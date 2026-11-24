@@ -1,0 +1,179 @@
+INVENTARIO VIVO — PROTOTIPO LOCAL
+
+Cómo abrirlo
+1. Extrae todo el ZIP en una carpeta.
+2. Abre index.html con un navegador moderno (Edge o Chrome).
+3. Conserva juntos todos los archivos HTML, CSS y JS incluidos.
+No requiere instalación ni conexión a Internet. Si tu navegador restringe el
+guardado al abrir archivos locales, usa un servidor local con VS Code Live
+Server o, si tienes Python instalado: python -m http.server 8000
+Abre entonces http://localhost:8000. Usa siempre el mismo navegador y dirección.
+
+Qué incluye
+- 601 registros y 123 movimientos iniciales extraídos del kit Excel.
+- Búsqueda, filtros por proyecto/categoría/situación, disponibilidad y CSV.
+- Registro y edición de fichas con código único y cantidades/valores válidos.
+- Proyectos: cambio de etapa. Agrupaciones: creación, estado y responsable.
+- Espacios interiores como texto de cada ficha (no catálogo independiente).
+- Traslado del lote completo: solicitud, aprobación/despacho y recepción.
+  La ubicación cambia al recibir; antes conserva el origen y queda en tránsito.
+- Novedades: daño, pérdida, reparación, saldos, venta, baja, llegada y anulación
+  por duplicado. Baja, venta y anulación conservan el historial y salen del valor activo.
+- Historial con fecha, responsable seleccionado, motivo y antes/después de las
+  ediciones. El responsable vigente del elemento se toma de su agrupación.
+- Conteo histórico del kit y nuevas verificaciones sin alterar cantidades.
+- Persistencia con localStorage, exportación CSV y descarga de respaldo JSON.
+
+Demostración en cinco minutos
+1. Busca EL-00001 y abre Alacena.
+2. Solicita su traslado a AGR-D-SV, espacio SALA, motivo «Dotación de apertura».
+3. En Traslados, aprueba y despacha. El elemento permanece en el origen,
+   pero figura En tránsito.
+4. Cambia el responsable que registra a RESP-05 y confirma la recepción.
+5. Busca nuevamente el código: ahora está en PRY-D / AGR-D-SV / SALA.
+6. Abre su historia y registra una verificación física.
+7. Recarga: los cambios deben seguir disponibles. Exporta un respaldo JSON.
+
+Estructura del código
+index.html: estructura de la interfaz, navegación y ventana de formularios.
+styles.css: diseño adaptable a pantalla, tablas, fichas y formularios.
+data.js: datos iniciales del kit convertidos a objetos JavaScript.
+core.js: validaciones y transiciones del traslado, sin dependencia del navegador.
+app.js: interfaz, filtros, formularios, persistencia, historial y exportaciones.
+tests.cjs: pruebas de datos y reglas. Ejecutar con Node: node tests.cjs
+
+Datos y decisiones
+La hoja LEEME del Excel indica que, salvo Acta_Proyecto_A, los datos son ficticios.
+Este prototipo usa las hojas normalizadas del kit, no interpreta el acta original
+como una importación limpia. Los datos originales del usuario no se modifican.
+Se preservan las inconsistencias del kit. Las alertas son orientativas y no
+detectan todos los errores sembrados. La carga Excel es una conversión inicial;
+no hay importador XLSX dentro de la aplicación.
+El valor activo suma cantidad por valor unitario y excluye De baja, Vendido y
+Anulado por duplicado. No calcula depreciación ni precio real de venta.
+Los indicadores superiores son globales; el CSV exporta la vista filtrada.
+Disponibilidad significa En bodega y estado Bueno o Regular. Los elementos
+de espacios En cierre son candidatos a revisión, no disponibles automáticamente.
+Los movimientos históricos En tránsito sin una solicitud nueva se señalan para
+revisión; no se inventan destinos ni recepciones a partir de registros incompletos.
+
+Alcance y límites
+Es un MVP local para desarrollar y presentar la propuesta. No es un sistema
+multiusuario. El selector de responsable NO autentica ni aplica permisos.
+No hay envío real de notificaciones, archivos fotográficos, QR, firma de actas,
+IA, aprobaciones financieras, traslados parciales ni control de ventas monetarias.
+No implementa alta de proyectos, jerarquía independiente de subespacios ni
+un responsable líder adicional por proyecto. Las agrupaciones sí son editables.
+La evidencia de novedades se guarda como referencia textual, no como archivo.
+El respaldo JSON contiene el estado completo; no hay botón de restauración.
+El almacenamiento depende del navegador. Borrar sus datos elimina los cambios.
+Usa una pestaña a la vez; el aviso de cambios entre pestañas no resuelve conflictos.
+El historial local es editable por quien tenga acceso al navegador y no constituye
+auditoría de producción. Las fechas locales no equivalen a sellos de tiempo de servidor.
+
+Cómo evolucionarlo conservando HTML, CSS y JavaScript
+1. Separar lectura/escritura del estado en funciones de acceso a datos.
+2. Crear un backend JavaScript con API HTTP y base de datos relacional.
+3. Modelar proyectos, agrupaciones, espacios, elementos, usuarios, roles,
+   solicitudes, movimientos y verificaciones. Código único y claves foráneas
+   deben validarse también en la base de datos.
+4. Autenticar usuarios y controlar permisos en el servidor: líderes por proyecto,
+   compras para altas, bodega para despachos, receptor para confirmar y finanzas
+   para bajas/ventas. No confiar en controles ocultos del navegador.
+5. Ejecutar cada recepción en una transacción que actualice ubicación y estado,
+   verifique la versión del registro e inserte la auditoría de forma atómica.
+6. Incorporar respaldos automáticos, archivos privados de evidencia y pruebas
+   de concurrencia. Acordar con Conaltura reglas de aprobación y disponibilidad.
+
+Fuentes revisadas
+Reto de CONALTURA.docx: requerimientos funcionales y jerarquía.
+Proyecto Reto.pdf: problema empresarial y contexto operativo.
+Kit_datos_Reto_Inventario_Vivo.xlsx: datos y casos de uso del ejercicio.
+Reto_Inventario_Vivo.html: explicación interactiva de los cuatro caminos.
+DOC-20261114-WA0007.pptx: contexto de hackatón y definición de MVP.
+
+ACTUALIZACIÓN: EXPLORACIÓN Y ANÁLISIS (24 de noviembre de 2026)
+
+En Proyectos y espacios ahora puedes navegar:
+Proyecto > apartamento modelo / sala de ventas / bodega > espacio interior > elemento.
+Las tarjetas muestran los espacios que existen en los datos, sin inventar espacios
+vacíos. Las migas de navegación permiten volver a cualquier nivel. El botón
+Administrar proyectos y agrupaciones conserva las funciones de configuración.
+
+La nueva sección Análisis y costos incluye:
+- Trimestres, semestres y años calendario, con filtro por proyecto.
+- Traslados históricos y nuevas recepciones; solicitudes/despachos no se duplican.
+- Envíos a reparación por categoría, separados del contador acumulado de la ficha.
+- Lotes y unidades comprados según Fecha_compra, con valor de referencia.
+- Gastos documentados por proyecto, categoría, mes y concepto.
+- Comparación con el periodo anterior (identifica periodos incompletos).
+- Gráfico mensual, tabla detallada y exportación de análisis a CSV.
+- Escenario de gasto a 3, 6 o 12 meses, con ajuste porcentual editable.
+- Señales actuales de reutilización, daño, saldos y reparaciones repetidas.
+
+Registro de gastos: usa + Registrar gasto. El importe debe ser positivo y la
+fecha no puede ser futura. Indica factura/soporte y línea para evitar duplicados.
+No se vincula automáticamente una factura a existencias ni a movimientos.
+No hay datos de gastos reales en el kit: por eso aparece Sin datos inicialmente.
+No se incluyen gastos de prueba en los archivos entregados.
+
+La proyección utiliza: gasto registrado / días transcurridos del periodo
+seleccionado × (365,25 / 12 × meses proyectados) × (1 + ajuste / 100).
+Para periodos cerrados, usa todos sus días; para el actual, hasta hoy, inclusive.
+Es una extrapolación aritmética: requiere registro completo y no modela
+estacionalidad, inflación, planes de compra ni vida útil. Los periodos futuros
+sin días transcurridos no producen proyección.
+
+Las compras se estiman con cantidades, precios, categorías y proyecto actuales.
+No son facturas pagadas ni una reconstrucción histórica de la asignación.
+Las reparaciones se atribuyen a la categoría actual de la ficha y al proyecto
+histórico de origen/destino cuando es identificable. Traslados entre proyectos
+aparecen al filtrar cada uno, pero se cuentan una sola vez en el total general.
+Los movimientos del kit no prueban recepción ni número de viajes de transporte.
+
+Archivos añadidos: analytics.js (cálculos), extensions.js (interfaz y navegación),
+analytics.test.cjs (pruebas de fechas, conteos, gastos y proyección).
+Pruebas: node tests.cjs y node analytics.test.cjs.
+
+Conservación de datos: se mantiene la clave localStorage de la versión anterior.
+Si actualizas los archivos bajo la misma dirección web y navegador, conserva
+los datos existentes. Abrir un HTML en una ruta nueva puede usar otro almacén:
+conserva la versión anterior y descarga su respaldo antes de cambiar de ruta.
+No existe restauración automática de respaldos ni sincronización entre equipos.
+
+NAVEGACIÓN DENTRO DE LA FICHA
+Los formularios Editar ficha, Registrar novedad, Solicitar traslado y Verificar
+físicamente ahora incluyen dos opciones en el encabezado:
+- Volver a la ficha: regresa al mismo elemento sin guardar el formulario actual.
+- Cerrar: cierra toda la ventana y vuelve a la página que estaba detrás.
+El botón de regreso no aparece al registrar un elemento nuevo, porque todavía
+no hay una ficha existente. Guardar conserva el comportamiento anterior.
+En app.js, enableItemReturn conecta el botón con el código del elemento;
+dialog reinicia esa conexión al abrir otra pantalla para evitar referencias viejas.
+
+INTERACCIONES Y VERIFICACIÓN POR PROYECTO (24 de noviembre de 2026)
+- En Análisis y costos, haz clic en los indicadores, categorías, conceptos,
+  meses y señales del inventario para consultar los registros del cálculo.
+  El desglose respeta el periodo y el proyecto seleccionados. Categorías y
+  meses permiten alternar tipos de registro; cada listado tiene búsqueda.
+- Los nombres de elementos abren sus fichas. Volver al listado conserva
+  el tipo de desglose y su búsqueda, incluso después de abrir un formulario
+  y regresar sin guardarlo. Cerrar vuelve a la página de análisis.
+- Verificación física permite elegir cualquier proyecto y agrupación,
+  buscar elementos y registrar conteos desde cada fila. Separa el inventario
+  actual de la evidencia de conteos registrados; pagina de 20 en 20.
+- El kit solo contiene conteos de AGR-C-AM1 del 5 de noviembre de 2026.
+  No se inventaron conteos para otros proyectos. Los conteos nuevos conservan
+  proyecto, agrupación y espacio originales, aunque luego haya un traslado.
+  Los conteos antiguos guardados localmente recuperan la ubicación del historial
+  o de su referencia textual; si no se identifica, se indica esa limitación.
+- Historial muestra nombre y código del elemento y permite buscar por nombre.
+  Los movimientos sin código válido se conservan sin enlace a una ficha.
+- Bodega central (BOD) y su agrupación AGR-BOD no son dos bodegas distintas.
+  Se unificó la etiqueta visible como Bodega central sin cambiar los códigos,
+  las existencias ni los movimientos. Bodega sigue siendo el tipo de agrupación.
+
+interactions.js contiene los desgloses, enlaces a fichas y verificación filtrada.
+verification.test.cjs prueba que los conteos mantengan su ubicación histórica.
+Ejecuta npm test para todas las pruebas, o node verification.test.cjs para estas.
+Los archivos entregados no incluyen el conteo de prueba usado en la revisión.

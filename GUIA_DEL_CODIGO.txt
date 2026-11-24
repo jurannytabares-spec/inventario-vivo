@@ -1,0 +1,132 @@
+GUÍA PARA LEER Y MODIFICAR INVENTARIO VIVO
+
+Empieza por los archivos separados del ZIP. El HTML autónomo reúne todo para
+abrir la herramienta fácilmente, pero tiene muchos datos y es menos cómodo
+para trabajar en el código.
+
+1. QUÉ HACE CADA ARCHIVO
+
+   index.html
+   Estructura principal: menú, encabezado, indicadores y ventana de formularios.
+   Los comentarios HTML señalan las zonas principales.
+
+   styles.css
+   Todos los estilos. La primera sección, :root, contiene la paleta.
+   Después aparecen controles, menú, tarjetas, tablas, formularios,
+   adaptación a celulares y estilos del análisis.
+
+   app.js
+   Inventario, fichas, movimientos, formularios, historial y guardado.
+   Cada función principal tiene un comentario que explica su propósito.
+
+   core.js
+   Reglas del inventario y de los traslados. No dibuja pantallas.
+
+   extensions.js
+   Explorador de proyectos y espacios, panel de análisis y registro de gastos.
+
+   analytics.js
+   Cálculos por periodo, comparación, validación de gastos, proyección y conteos.
+
+   interactions.js
+   Listados de detalle del análisis, enlaces a fichas y verificación por proyecto.
+   Conserva el contexto al volver de la ficha al listado.
+
+   data.js
+   Datos iniciales del kit, organizados con un atributo por línea.
+   Modificarlos no reemplaza los cambios que ya estén guardados en el navegador.
+
+   tests.cjs / analytics.test.cjs / verification.test.cjs
+   Pruebas de reglas, cálculos y ubicación histórica de las verificaciones.
+
+   build.cjs
+   Genera el HTML autónomo desde los archivos separados.
+
+2. CÓMO CAMBIAR COLORES
+
+Abre styles.css y busca :root, al principio.
+
+   --olive       #304638   Menú lateral y bordes de agrupaciones.
+   --emerald     #21634e   Botones principales y acciones.
+   --deep-blue   #203e4a   Texto y títulos.
+   --turquoise   #246f73   Gráficos y foco del teclado.
+   --terracotta  #a64f38   Novedades negativas y acentos.
+   --mustard     #956914   Indicadores y tonos cálidos.
+   --gold        #d7ae58   Marca y selección en el menú.
+   --lavender    #6b527f   Acentos; fondos claros para estados y proyección.
+   --beige       #f7f3eb   Fondo general.
+
+Ejemplo: para cambiar el color principal, modifica --emerald.
+Las reglas usan var(--green), que apunta a --emerald, para propagar el cambio.
+Conserva texto oscuro sobre fondos claros y texto claro sobre botones oscuros.
+Los estados conservan su etiqueta escrita: el color no es la única señal.
+
+3. CÓMO LEER EL JAVASCRIPT
+
+Una función agrupa una tarea. Por ejemplo, filtered() selecciona los elementos
+que cumplen los filtros y rows() dibuja esos resultados.
+
+Las plantillas que empiezan con /* HTML */ contienen HTML dentro de JavaScript.
+Las expresiones ${...} insertan datos en ese HTML. esc(...) convierte texto en
+contenido seguro: úsalo cuando muestres nombres, observaciones u otros textos.
+
+Para localizar una funcionalidad:
+   Registrar elemento       app.js          itemForm
+   Botones de un traslado   app.js          transferActions
+   Etapas del traslado      core.js         advanceTransfer
+   Recorrido por espacios   extensions.js   explorer
+   Pantalla de análisis     extensions.js   analytics
+   Fórmulas del análisis    analytics.js    report / projection
+   Desgloses interactivos  interactions.js openAnalysisDetail
+   Conteos por proyecto    interactions.js verificationWorkspace
+   Ubicación del conteo    analytics.js    verificationRecords
+
+4. CÓMO TRABAJAR CON EL PROYECTO
+
+Extrae el ZIP completo y abre la carpeta inventario-vivo en tu editor.
+Abre index.html en el navegador para ver los cambios en los archivos separados.
+Modifica un bloque a la vez, guarda y recarga el navegador.
+
+No necesitas instalar nada para usar la herramienta.
+Si tienes Node.js, puedes ejecutar dentro de la carpeta:
+
+   node tests.cjs
+   node analytics.test.cjs
+   node verification.test.cjs
+   node build.cjs
+
+El último comando actualiza Inventario_Vivo.html en la carpeta superior.
+Edita los archivos fuente y luego genera el HTML; si editas solo el HTML
+generado, sus cambios se perderán en la siguiente generación.
+
+5. CÓMO CONSERVAR EL FORMATO VERTICAL
+
+El código usa dos espacios de sangría, bloques separados, comentarios y
+una propiedad CSS o dato por línea. Algunas frases largas se mantienen
+completas para conservar su texto.
+
+.prettierrc.json contiene la configuración del formato. Si deseas aplicar
+automáticamente el mismo formato a futuras modificaciones, con Node.js:
+
+   npm install
+   npm run format
+
+Prettier se utiliza solo para desarrollar; el navegador no lo necesita.
+Puedes activar también el ajuste visual de línea en tu editor para leer
+frases largas sin desplazarte horizontalmente.
+
+6. QUÉ SE CONSERVÓ
+
+La actualización cambia la presentación y organiza el código. Se conserva
+la clave de almacenamiento, los datos iniciales, las rutas y las reglas
+de inventario, traslados y análisis. Los comentarios no se ejecutan.
+
+Antes de reemplazar una instalación con datos propios, descarga su respaldo.
+Usa el mismo navegador y dirección para conservar el almacenamiento local.
+
+7. ORDEN DE CARGA
+
+index.html carga data.js, core.js, app.js, analytics.js, interactions.js y
+extensions.js, en ese orden. El primer render está al final de extensions.js,
+cuando todas las funciones están disponibles. build.cjs conserva ese orden
+en el HTML autónomo. Añade cualquier módulo nuevo en ambos archivos.

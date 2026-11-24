@@ -1,0 +1,14 @@
+{
+  "name": "inventario-vivo",
+  "version": "1.3.0",
+  "private": true,
+  "description": "Prototipo local de inventario, espacios y análisis de costos",
+  "scripts": {
+    "build": "node build.cjs",
+    "test": "node tests.cjs && node analytics.test.cjs && node verification.test.cjs",
+    "format": "prettier --write \"*.{html,css,js,cjs,json}\""
+  },
+  "devDependencies": {
+    "prettier": "3.10.1"
+  }
+}
